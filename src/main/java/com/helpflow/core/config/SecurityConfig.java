@@ -17,8 +17,10 @@ public class SecurityConfig {
                         // Libera endpoints públicos para desenvolvimento
                         .requestMatchers("/api/health/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/api/usuarios/**").permitAll() // TEMPORÁRIO - desenvolvimento
-                        .requestMatchers("/api/tickets/**").permitAll()  // TEMPORÁRIO - desenvolvimento
+                        .requestMatchers("/api/usuarios/**").permitAll()
+                        .requestMatchers("/api/tickets/**").permitAll()
+                        .requestMatchers("/api/departamentos/**").permitAll()
+                        .requestMatchers("/api/categorias/**").permitAll()
                         // Todos os outros endpoints requerem autenticação
                         .anyRequest().authenticated()
                 )

@@ -1,11 +1,7 @@
 package com.helpflow.core.config;
 
-import com.helpflow.domain.entities.Prioridade;
-import com.helpflow.domain.entities.Perfil;
-import com.helpflow.domain.entities.SLA;
-import com.helpflow.infrastructure.persistence.mongodb.PrioridadeRepository;
-import com.helpflow.infrastructure.persistence.mongodb.PerfilRepository;
-import com.helpflow.infrastructure.persistence.mongodb.SLARepository;
+import com.helpflow.domain.entities.*;
+import com.helpflow.infrastructure.persistence.mongodb.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,6 +15,9 @@ public class DataInitializer implements CommandLineRunner {
     private final PerfilRepository perfilRepository;
     private final PrioridadeRepository prioridadeRepository;
     private final SLARepository slaRepository;
+    private final DepartamentoRepository departamentoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final CategoriaRepository categoriaRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -26,6 +25,7 @@ public class DataInitializer implements CommandLineRunner {
         initializePrioridades();
         initializeSLAs();
         initializeDepartamentos();
+        initializeCategorias();
     }
 
     private void initializePerfis() {
@@ -63,7 +63,66 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeDepartamentos() {
-        // Este método será implementado depois que tivermos usuários
-        System.out.println("📋 Departamentos serão inicializados após criação de usuários");
+        if (departamentoRepository.count() == 0) {
+            // Buscar um gestor para ser responsável
+            Perfil perfilGestor = perfilRepository.findByNome("Gestor")
+                    .orElseThrow(() -> new RuntimeException("Perfil Gestor não encontrado"));
+
+            // Criar um usuário gestor temporário
+            Usuario gestor = new Usuario();
+            gestor.setNome("Administrador Sistema");
+            gestor.setEmail("admin@helpflow.com");
+            gestor.setSenha("123456");
+            gestor.setPerfil(perfilGestor);
+            gestor = usuarioRepository.save(gestor);
+
+            departamentoRepository.saveAll(Arrays.asList(
+                    criarDepartamento("Suporte Técnico", "Atendimento a problemas técnicos", "suporte@helpflow.com", gestor),
+                    criarDepartamento("Comercial", "Vendas e informações comerciais", "comercial@helpflow.com", gestor),
+                    criarDepartamento("Financeiro", "Cobrança e questões financeiras", "financeiro@helpflow.com", gestor)
+            ));
+            System.out.println("✅ Departamentos inicializados com sucesso!");
+        }
+    }
+
+    private void initializeCategorias() {
+        if (categoriaRepository.count() == 0) {
+            // Buscar departamento e SLA
+            Departamento suporte = departamentoRepository.findByNome("Suporte Técnico")
+                    .orElseThrow(() -> new RuntimeException("Departamento Suporte não encontrado"));
+
+            SLA slaBasico = slaRepository.findByNome("SLA Básico")
+                    .orElseThrow(() -> new RuntimeException("SLA Básico não encontrado"));
+
+            SLA slaUrgente = slaRepository.findByNome("SLA Urgente")
+                    .orElseThrow(() -> new RuntimeException("SLA Urgente não encontrado"));
+
+            categoriaRepository.saveAll(Arrays.asList(
+                    criarCategoria("Problemas de Login", suporte, slaBasico, "#3B82F6"),
+                    criarCategoria("Erros no Sistema", suporte, slaUrgente, "#EF4444"),
+                    criarCategoria("Dúvidas de Uso", suporte, slaBasico, "#10B981"),
+                    criarCategoria("Solicitações de Melhoria", suporte, slaBasico, "#8B5CF6")
+            ));
+            System.out.println("✅ Categorias inicializadas com sucesso!");
+        }
+    }
+
+    // Métodos auxiliares
+    private Departamento criarDepartamento(String nome, String descricao, String email, Usuario responsavel) {
+        Departamento departamento = new Departamento();
+        departamento.setNome(nome);
+        departamento.setDescricao(descricao);
+        departamento.setEmail(email);
+        departamento.setResponsavel(responsavel);
+        return departamento;
+    }
+
+    private Categoria criarCategoria(String nome, Departamento departamento, SLA sla, String cor) {
+        Categoria categoria = new Categoria();
+        categoria.setNome(nome);
+        categoria.setDepartamento(departamento);
+        categoria.setSla(sla);
+        categoria.setCor(cor);
+        return categoria;
     }
 }
