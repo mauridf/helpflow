@@ -28,4 +28,20 @@ public class SLA {
     public boolean isTempoResolucaoExcedido(long horasDecorridas) {
         return horasDecorridas > this.tempoResolucao;
     }
+
+    // Construtor para DataInitializer
+    public SLA(String nome, Integer tempoResposta, Integer tempoResolucao, String descricao) {
+        this.nome = nome;
+        this.tempoResposta = tempoResposta;
+        this.tempoResolucao = tempoResolucao;
+        this.descricao = descricao;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // Manter o construtor vazio também
+    public SLA() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
