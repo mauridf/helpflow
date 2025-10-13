@@ -21,6 +21,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/tickets/**").permitAll()
                         .requestMatchers("/api/departamentos/**").permitAll()
                         .requestMatchers("/api/categorias/**").permitAll()
+                        .requestMatchers("/api/mensagens/**").permitAll()
+                        .requestMatchers("/api/anexos/**").permitAll()
                         // Todos os outros endpoints requerem autenticação
                         .anyRequest().authenticated()
                 )
