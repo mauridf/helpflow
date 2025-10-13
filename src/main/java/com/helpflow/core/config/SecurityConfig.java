@@ -17,12 +17,12 @@ public class SecurityConfig {
                         // Libera endpoints públicos para desenvolvimento
                         .requestMatchers("/api/health/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/usuarios/**").permitAll() // TEMPORÁRIO - desenvolvimento
+                        .requestMatchers("/api/tickets/**").permitAll()  // TEMPORÁRIO - desenvolvimento
                         // Todos os outros endpoints requerem autenticação
                         .anyRequest().authenticated()
                 )
-                // Desabilita CSRF para desenvolvimento (reativar em produção)
+                // Desabilita CSRF para desenvolvimento
                 .csrf(csrf -> csrf.disable());
 
         return http.build();
