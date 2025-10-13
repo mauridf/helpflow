@@ -25,6 +25,7 @@ public class DataInitializer implements CommandLineRunner {
         initializePerfis();
         initializePrioridades();
         initializeSLAs();
+        initializeDepartamentos();
     }
 
     private void initializePerfis() {
@@ -59,5 +60,10 @@ public class DataInitializer implements CommandLineRunner {
             ));
             System.out.println("✅ SLAs inicializados com sucesso!");
         }
+    }
+
+    private void initializeDepartamentos() {
+        // Este método será implementado depois que tivermos usuários
+        System.out.println("📋 Departamentos serão inicializados após criação de usuários");
     }
 }
