@@ -4,6 +4,10 @@ import com.helpflow.domain.entities.*;
 import com.helpflow.infrastructure.persistence.mongodb.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -18,14 +22,37 @@ public class DataInitializer implements CommandLineRunner {
     private final DepartamentoRepository departamentoRepository;
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
+        initializeUsuarios();
         initializePerfis();
         initializePrioridades();
         initializeSLAs();
         initializeDepartamentos();
         initializeCategorias();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    private void initializeUsuarios() {
+        if (usuarioRepository.count() == 0) {
+            Perfil perfilGestor = perfilRepository.findByNome("Gestor")
+                    .orElseThrow(() -> new RuntimeException("Perfil Gestor não encontrado"));
+
+            Usuario admin = new Usuario();
+            admin.setNome("Administrador Sistema");
+            admin.setEmail("admin@helpflow.com");
+            admin.setSenha(passwordEncoder.encode("123456"));
+            admin.setPerfil(perfilGestor);
+            usuarioRepository.save(admin);
+
+            System.out.println("✅ Usuário admin criado com sucesso!");
+        }
     }
 
     private void initializePerfis() {

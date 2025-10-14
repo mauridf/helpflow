@@ -11,6 +11,7 @@ import com.helpflow.infrastructure.persistence.mongodb.UsuarioRepository;
 import com.helpflow.infrastructure.persistence.mongodb.DepartamentoRepository;
 import com.helpflow.infrastructure.persistence.mongodb.PerfilRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class UsuarioService {
     private final DepartamentoRepository departamentoRepository;
     private final PerfilRepository perfilRepository;
     private final UsuarioMapper usuarioMapper;
+    private final BCryptPasswordEncoder passwordEncoder; // CORREÇÃO: Adicionado
 
     public List<UsuarioDTO> listarTodos() {
         return usuarioRepository.findAll().stream()
@@ -63,6 +65,9 @@ public class UsuarioService {
 
         // Criar usuário
         Usuario usuario = usuarioMapper.toEntity(dto, departamento, perfil);
+        // CORREÇÃO: Hash da senha
+        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
         return usuarioMapper.toDTO(usuarioSalvo);
