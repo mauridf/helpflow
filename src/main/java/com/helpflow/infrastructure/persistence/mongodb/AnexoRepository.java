@@ -2,6 +2,7 @@ package com.helpflow.infrastructure.persistence.mongodb;
 
 import com.helpflow.domain.entities.Anexo;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,5 +11,6 @@ import java.util.List;
 public interface AnexoRepository extends MongoRepository<Anexo, String> {
     List<Anexo> findByMensagemId(String mensagemId);
     void deleteByMensagemId(String mensagemId);
-    List<Anexo> findByTicketId(String ticketId); // Para buscar todos anexos de um ticket
+    @Query("{ 'mensagem.ticket.$id': ObjectId(?0) }")
+    List<Anexo> findByMensagemTicketId(String ticketId);
 }

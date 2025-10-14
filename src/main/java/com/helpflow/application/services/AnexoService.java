@@ -107,4 +107,11 @@ public class AnexoService {
 
         anexoRepository.deleteByMensagemId(mensagemId);
     }
+
+    public List<AnexoDTO> listarPorTicket(String ticketId) {
+        List<Anexo> anexos = anexoRepository.findByMensagemTicketId(ticketId);
+        return anexos.stream()
+                .map(anexoMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

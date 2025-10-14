@@ -1,4 +1,3 @@
-// src/main/java/com/helpflow/core/config/SecurityConfig.java
 package com.helpflow.core.config;
 
 import lombok.RequiredArgsConstructor;
@@ -36,18 +35,23 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        // Endpoints públicos
+                        // ✅ Liberar Swagger e documentação
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll()
+
+                        // ✅ Endpoints públicos
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/setup/**").permitAll()
-                        .requestMatchers("/api/perfis/**").permitAll()
-                        .requestMatchers("/api/prioridades/**").permitAll()
-                        .requestMatchers("/api/slas/**").permitAll()
-                        .requestMatchers("/api/dashboard/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
-                        // Endpoints que requerem autenticação
+                        // ✅ Temporariamente liberar tudo para desenvolvimento
+                        .requestMatchers("/api/**").permitAll()
+
+                        // Todos os outros endpoints requerem autenticação
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
