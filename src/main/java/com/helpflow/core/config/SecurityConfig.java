@@ -41,6 +41,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/health/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/setup/**").permitAll()
+                        .requestMatchers("/api/perfis/**").permitAll()
+                        .requestMatchers("/api/prioridades/**").permitAll()
+                        .requestMatchers("/api/slas/**").permitAll()
+                        .requestMatchers("/api/dashboard/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
                         // Endpoints que requerem autenticação

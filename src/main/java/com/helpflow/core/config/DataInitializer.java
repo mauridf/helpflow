@@ -34,11 +34,6 @@ public class DataInitializer implements CommandLineRunner {
         initializeCategorias();
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     private void initializeUsuarios() {
         if (usuarioRepository.count() == 0) {
             Perfil perfilGestor = perfilRepository.findByNome("Gestor")
