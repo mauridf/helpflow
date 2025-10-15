@@ -4,9 +4,6 @@ import com.helpflow.domain.entities.*;
 import com.helpflow.infrastructure.persistence.mongodb.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -26,12 +23,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        initializeUsuarios();
         initializePerfis();
         initializePrioridades();
         initializeSLAs();
         initializeDepartamentos();
         initializeCategorias();
+        initializeUsuarios();
     }
 
     private void initializeUsuarios() {
@@ -90,13 +87,16 @@ public class DataInitializer implements CommandLineRunner {
             Perfil perfilGestor = perfilRepository.findByNome("Gestor")
                     .orElseThrow(() -> new RuntimeException("Perfil Gestor não encontrado"));
 
-            // Criar um usuário gestor temporário
-            Usuario gestor = new Usuario();
-            gestor.setNome("Administrador Sistema");
-            gestor.setEmail("admin@helpflow.com");
-            gestor.setSenha("123456");
-            gestor.setPerfil(perfilGestor);
-            gestor = usuarioRepository.save(gestor);
+            // ✅ CORREÇÃO: Usar o usuário admin já criado ou criar com senha codificada
+            Usuario gestor = usuarioRepository.findByEmail("admin@helpflow.com")
+                    .orElseGet(() -> {
+                        Usuario admin = new Usuario();
+                        admin.setNome("Administrador Sistema");
+                        admin.setEmail("admin@helpflow.com");
+                        admin.setSenha(passwordEncoder.encode("123456")); // ✅ Senha codificada
+                        admin.setPerfil(perfilGestor);
+                        return usuarioRepository.save(admin);
+                    });
 
             departamentoRepository.saveAll(Arrays.asList(
                     criarDepartamento("Suporte Técnico", "Atendimento a problemas técnicos", "suporte@helpflow.com", gestor),

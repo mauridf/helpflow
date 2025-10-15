@@ -107,7 +107,11 @@ public class UsuarioService {
     }
 
     public List<UsuarioDTO> listarPorPerfil(String perfilNome) {
-        return usuarioRepository.findByPerfilNome(perfilNome).stream()
+        // Buscar o perfil primeiro e depois usuários por ID
+        Perfil perfil = perfilRepository.findByNome(perfilNome)
+                .orElseThrow(() -> new RuntimeException("Perfil não encontrado: " + perfilNome));
+
+        return usuarioRepository.findByPerfilId(perfil.getId()).stream()
                 .map(usuarioMapper::toDTO)
                 .collect(Collectors.toList());
     }
